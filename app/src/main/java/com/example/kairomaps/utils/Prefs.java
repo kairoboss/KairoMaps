@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,6 +25,16 @@ public class Prefs {
         String json = gson.toJson(coords);
         preferences.edit().putString(KEY,json).apply();
     }
+    public void putPolyLines(String KEY, List<PolylineOptions> coords){
+        Gson gson = new Gson();
+        String json = gson.toJson(coords);
+        preferences.edit().putString(KEY,json).apply();
+    }
+    public void putPolygons(String KEY, List<PolygonOptions> coords){
+        Gson gson = new Gson();
+        String json = gson.toJson(coords);
+        preferences.edit().putString(KEY,json).apply();
+    }
     public List<LatLng> getCoords(String KEY){
         List<LatLng> coords = new ArrayList<>();
         String converted = preferences.getString(KEY, null);
@@ -32,6 +44,26 @@ public class Prefs {
             coords = gson.fromJson(converted, type);
         }
         return coords;
+    }
+    public List<PolylineOptions> getPolyLines(String KEY){
+        List<PolylineOptions> polyLines = new ArrayList<>();
+        String converted = preferences.getString(KEY, null);
+        if (converted != null){
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<PolylineOptions>>(){}.getType();
+            polyLines = gson.fromJson(converted, type);
+        }
+        return polyLines;
+    }
+    public List<PolygonOptions> getPolygons(String KEY){
+        List<PolygonOptions> polygons = new ArrayList<>();
+        String converted = preferences.getString(KEY, null);
+        if (converted != null){
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<PolygonOptions>>(){}.getType();
+            polygons = gson.fromJson(converted, type);
+        }
+        return polygons;
     }
     public void clearPrefs(){
         preferences.edit().clear().apply();

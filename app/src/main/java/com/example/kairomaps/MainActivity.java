@@ -30,8 +30,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityMainBinding binding;
     private GoogleMap gMap;
     private List<LatLng> coordinates;
+    private List<PolygonOptions> polygons;
+    private List<PolylineOptions> polylines;
     private Prefs prefs;
-    public static String PREFS_KEY = "key";
+    public static String PREFS_KEY = "coords";
+    public static String POLYLINES_KEY = "polylines";
+    public static String POLYGONS_KEY = "polygons";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         gMap = googleMap;
         googleMap.setOnMapClickListener(this);
         coordinates = new ArrayList<>();
+        polylines = new ArrayList<>();
+        polygons = new ArrayList<>();
         btnListeners();
     }
     private void btnListeners() {
@@ -87,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void loadMap() {
         coordinates = prefs.getCoords(PREFS_KEY);
+        polylines = prefs.getPolyLines(POLYLINES_KEY);
+        polygons = prefs.getPolygons(POLYGONS_KEY);
         if (!coordinates.isEmpty()) {
             for (int i = 0; i < coordinates.size(); i++) {
                 MarkerOptions markerOptions = new MarkerOptions();
@@ -94,12 +102,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_icon));
                 gMap.addMarker(markerOptions);
             }
-            PolygonOptions polygonOptions = new PolygonOptions();
-            polygonOptions.addAll(coordinates);
-            gMap.addPolygon(polygonOptions);
-            PolylineOptions polylineOptions = new PolylineOptions();
-            polylineOptions.addAll(coordinates);
-            gMap.addPolyline(polylineOptions);
+            for (int i = 0; i <polylines.size() ; i++) {
+                gMap.addPolyline(polylines.get(i));
+            }
+            for (int i = 0; i < polygons.size(); i++) {
+                gMap.addPolygon(polygons.get(i));
+            }
         }
     }
 
@@ -111,12 +119,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void addPolygon() {
         PolygonOptions polygonOptions = new PolygonOptions();
         polygonOptions.addAll(coordinates);
+        polygons.add(polygonOptions);
         gMap.addPolygon(polygonOptions);
     }
 
     private void addPolyLine() {
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions.addAll(coordinates);
+        polylines.add(polylineOptions);
         gMap.addPolyline(polylineOptions);
     }
 
@@ -131,5 +141,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onDestroy() {
         super.onDestroy();
         prefs.putCoords(PREFS_KEY, coordinates);
+        prefs.putPolyLines(POLYLINES_KEY, polylines);
+        prefs.putPolygons(POLYGONS_KEY, polygons);
     }
 }
